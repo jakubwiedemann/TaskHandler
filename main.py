@@ -4,11 +4,12 @@ import subprocess
 from pathlib import Path
 import uuid
 import shutil
+import urllib.request
+import json
 
 def update_repos():
     task = subprocess.Popen(['ls', '|', 'xargs', '-I{}', 'git', '-C', '{}', 'pull'])
     task.wait()
-
 
 def run_set_update():
     task = subprocess.Popen([ 'python3', 'nonRedundantRNASetDownload/main.py'], stdout=subprocess.PIPE)
@@ -44,18 +45,35 @@ def dbn_cleaner():
         clean_file.writelines(lines)
         clean_file.close()
 
-
-
-
 def run_euler_angle_calculator():
     task = subprocess.Popen(['python3', 'nWayJunction_release/main.py'])
     task.wait()
+    
+def run_updater():
+    print('start os.system')
+    os.system('yarn --cwd rna-loops/updater start')
+    print('end os.system')
+
+def change_update_flag(value):
+    url = 'http://localhost:5000/api/settings'
+    data = json.dumps({
+        "name": "update",
+        "value": value
+    }).encode('utf8')
+    headers = {'content-type': 'application/json'}
+    req = urllib.request.Request(url=url, data=data, method='PUT', headers=headers)
+    with urllib.request.urlopen(req) as f:
+        pass
+    print('Status', f.status, 'Update state set to', value)
 
 if __name__ == "__main__":
     #update_repos()
     f= open("log.txt","w+")
     f.close()
+    change_update_flag(1)
     run_set_update()
     run_rnapdbee()
     dbn_cleaner()
     run_euler_angle_calculator()
+    run_updater()
+    change_update_flag(0)
