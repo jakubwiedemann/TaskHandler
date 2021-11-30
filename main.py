@@ -18,10 +18,11 @@ def run_set_update():
 def run_rnapdbee():
     if not os.path.exists(Path('./dotbracket_files')):
         os.makedirs(Path('dotbracket_files'))
-    temp_path = Path('/tmp/' + str(uuid.uuid4()))
-    os.makedirs(temp_path)
     for files in glob.glob('PDB_files/*.cif'):
         files = Path(files)
+        if not (os.path.isfile('./dotbracket_files/' + os.path.split(str(files.with_suffix('')))[1] + '-2D-dotbracket.dbn')):
+            temp_path = Path('/tmp/' + str(uuid.uuid4()))
+            os.makedirs(temp_path)
         task = subprocess.Popen([ '/opt/rnapdbee-standalone-old/rnapdbee', '-i', files.absolute(), '-o', temp_path, '-a', 'DSSR'], stdout=subprocess.PIPE)
         task.wait()
         try:
@@ -46,9 +47,13 @@ def dbn_cleaner():
         clean_file.close()
 
 def run_euler_angle_calculator():
-    task = subprocess.Popen(['python3', 'nWayJunction_release/main.py'])
+    task = subprocess.Popen(['find', 'dotbracket_files/', '-name' '\'*.dbn\'', '>', 'list_of_dotbracket_files.txt'], stdout=subprocess.PIPE)
     task.wait()
-    
+    task = subprocess.Popen(['cat', 'list_of_dotbracket_files.txt', '|', 'parallel', '--verbose', 'python3',  'nWayJunction_release/main.py', 'single'], stdout=subprocess.PIPE)
+    task.wait()
+    task = subprocess.Popen(['python3',  'nWayJunction_release/main.py', 'merge'], stdout=subprocess.PIPE)
+    task.wait()
+
 def run_updater():
     print('start os.system')
     os.system('yarn --cwd rna-loops/updater start')
