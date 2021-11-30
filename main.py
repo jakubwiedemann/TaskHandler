@@ -51,7 +51,7 @@ def run_euler_angle_calculator():
     task.wait()
     task = subprocess.Popen(['cat list_of_dotbracket_files.txt | parallel --verbose python3 nWayJunction_release/main.py single'], shell=True, stdout=subprocess.PIPE)
     task.wait()
-    task = subprocess.Popen(['python3 nWayJunction_release/main.pymerge'], shell=True, stdout=subprocess.PIPE)
+    task = subprocess.Popen(['python3 nWayJunction_release/main.py merge'], shell=True, stdout=subprocess.PIPE)
     task.wait()
 
 def run_updater():
