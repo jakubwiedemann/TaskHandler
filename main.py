@@ -23,14 +23,14 @@ def run_rnapdbee():
         if not (os.path.isfile('./dotbracket_files/' + os.path.split(str(files.with_suffix('')))[1] + '-2D-dotbracket.dbn')):
             temp_path = Path('/tmp/' + str(uuid.uuid4()))
             os.makedirs(temp_path)
-        task = subprocess.Popen([ '/opt/rnapdbee-standalone-old/rnapdbee', '-i', files.absolute(), '-o', temp_path, '-a', 'DSSR'], stdout=subprocess.PIPE)
-        task.wait()
-        try:
-            shutil.move(temp_path / '0' / 'strands.dbn','./dotbracket_files/' + files.stem + '-2D-dotbracket.dbn')
-        except:
-            f= open("log.txt","a+")
-            f.write(str(files.absolute()) + "\n")
-            f.close()
+            task = subprocess.Popen([ '/opt/rnapdbee-standalone-old/rnapdbee', '-i', files.absolute(), '-o', temp_path, '-a', 'DSSR'], stdout=subprocess.PIPE)
+            task.wait()
+            try:
+                shutil.move(temp_path / '0' / 'strands.dbn','./dotbracket_files/' + files.stem + '-2D-dotbracket.dbn')
+            except:
+                f= open("log.txt","a+")
+                f.write(str(files.absolute()) + "\n")
+                f.close()
 
 def dbn_cleaner():
     for file in glob.glob('dotbracket_files/*.dbn'):
@@ -70,6 +70,7 @@ def change_update_flag(value):
     with urllib.request.urlopen(req) as f:
         pass
     print('Status', f.status, 'Update state set to', value)
+
 
 if __name__ == "__main__":
     #update_repos()
